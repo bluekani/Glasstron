@@ -33,3 +33,10 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Upload native addon artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: glasstron-native-win32-x64-node24
+          path: native/dwm.node
+          if-no-files-found: error
