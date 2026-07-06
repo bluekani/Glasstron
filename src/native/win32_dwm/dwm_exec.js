@@ -29,7 +29,11 @@ module.exports = class DWMExec {
 	}
 
 	setWindowCompositionAttribute(hwnd, mode, tint){
-		return execFile(this.dwm, [hwnd, mode, tint]);
+        return execFile(this.dwm, ["swca", hwnd, mode, tint]);
 	}
+
+    setSystemBackdropType(hwnd, backdropType){
+        return execFile(this.dwm, ["backdrop", hwnd, backdropType]);
+    }
 
 };

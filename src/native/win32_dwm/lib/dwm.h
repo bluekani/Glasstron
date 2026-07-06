@@ -16,6 +16,18 @@
 #include <dwmapi.h>
 #include <iostream>
 
+#ifndef DWMWA_SYSTEMBACKDROP_TYPE
+#define DWMWA_SYSTEMBACKDROP_TYPE 38
+#endif
+
+enum DWM_SYSTEMBACKDROP_TYPE_FALLBACK {
+	DWMSBT_AUTO_FALLBACK = 0,
+	DWMSBT_NONE_FALLBACK = 1,
+	DWMSBT_MAINWINDOW_FALLBACK = 2,
+	DWMSBT_TRANSIENTWINDOW_FALLBACK = 3,
+	DWMSBT_TABBEDWINDOW_FALLBACK = 4
+};
+
 struct ACCENTPOLICY {
 	int nAccentState;
 	int nFlags;
@@ -41,5 +53,7 @@ enum ACCENTTYPES{
 */
 
 typedef BOOL(WINAPI *pSetWindowCompositionAttribute)(HWND, WINCOMATTRPDATA *);
+typedef HRESULT(WINAPI *pDwmSetWindowAttribute)(HWND, DWORD, LPCVOID, DWORD);
 
 int swca(HWND hwnd, int accentState, int color);
+int set_system_backdrop_type(HWND hwnd, int backdropType);

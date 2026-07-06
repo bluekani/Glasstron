@@ -30,10 +30,26 @@ Napi::Number set_window_composition_attribute(const Napi::CallbackInfo &info){
 	);
 }
 
+Napi::Number set_system_backdrop_type(const Napi::CallbackInfo &info){
+	Napi::Env env{info.Env()};
+
+	return Napi::Number::New(
+		env,
+		set_system_backdrop_type(
+			(HWND) info[0].As<Napi::Number>().Int64Value(),
+			info[1].As<Napi::Number>().Int32Value()
+		)
+	);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports){
 	exports.Set(
 		Napi::String::New(env, "setWindowCompositionAttribute"),
 		Napi::Function::New(env, set_window_composition_attribute)
+	);
+	exports.Set(
+		Napi::String::New(env, "setSystemBackdropType"),
+		Napi::Function::New(env, set_system_backdrop_type)
 	);
 
 	return exports;

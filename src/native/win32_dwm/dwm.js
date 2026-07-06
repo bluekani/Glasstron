@@ -17,6 +17,13 @@
 
 const os = require("os");
 
+const SYSTEM_BACKDROP_TYPES = {
+	none: 1,
+	mainwindow: 2,
+	transientwindow: 3,
+	tabbedwindow: 4
+};
+
 module.exports = class DWM{
 
 	constructor(win){
@@ -38,6 +45,11 @@ module.exports = class DWM{
 		this.wattr = [mode, tint];
 		return this.__dwm.setWindowCompositionAttribute(this.hwnd, mode, tint);
 	}
+
+	setSystemBackdropType(backdropType){
+		this.wattr = [backdropType === SYSTEM_BACKDROP_TYPES.none ? 0 : backdropType, 0];
+		return this.__dwm.setSystemBackdropType(this.hwnd, backdropType);
+	}
 	
 	getWindowCompositionAttribute(){
 		return this.wattr;
@@ -45,6 +57,8 @@ module.exports = class DWM{
 
 	// TINT IS IN AGBR VALUES!!
 	disable(tint = 0xffffffff){
+		if(this.supportsSystemBackdrop())
+			return this.setSystemBackdropType(SYSTEM_BACKDROP_TYPES.none);
 		return this.setWindowCompositionAttribute(0, tint);
 	}
 
@@ -61,8 +75,14 @@ module.exports = class DWM{
 	}
 
 	setAcrylic(tint = 0x00404040){
+		if(this.supportsSystemBackdrop())
+			return this.setSystemBackdropType(SYSTEM_BACKDROP_TYPES.transientwindow);
 		if(!this.supportsAcrylic()) return this.setBlurBehind(tint);
 		return this.setWindowCompositionAttribute(4, tint);
+	}
+
+	supportsSystemBackdrop(){
+		return this.constructor.isWindows11_22H2OrAbove();
 	}
 
 	supportsAcrylic(){
@@ -75,5 +95,11 @@ module.exports = class DWM{
 		if(process.platform !== "win32") return false;
 		const version = os.release().split(".").map(x => parseInt(x));
 		return version[0] >= 10 && version[1] >= 0 && version[2] >= 17134;
+	}
+
+	static isWindows11_22H2OrAbove(){
+		if(process.platform !== "win32") return false;
+		const version = os.release().split(".").map(x => parseInt(x));
+		return version[0] >= 10 && version[1] >= 0 && version[2] >= 22621;
 	}
 };

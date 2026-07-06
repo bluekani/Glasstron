@@ -16,12 +16,30 @@
 #include "dwm.cpp"
 
 int main(int argc, char **argv){
-	if (argc < 4)
+    if (argc < 2)
 		return 2;
 
-	return swca(
-		(HWND) std::stoull(argv[1]),
-		std::atoi(argv[2]),
-		std::atoi(argv[3])
-	);
+    const std::string command = argv[1];
+    if (command == "swca") {
+        if (argc < 5)
+            return 2;
+
+        return swca(
+            (HWND) std::stoull(argv[2]),
+            std::atoi(argv[3]),
+            std::atoi(argv[4])
+        );
+    }
+
+    if (command == "backdrop") {
+        if (argc < 4)
+            return 2;
+
+        return set_system_backdrop_type(
+            (HWND) std::stoull(argv[2]),
+            std::atoi(argv[3])
+        );
+    }
+
+    return 2;
 }

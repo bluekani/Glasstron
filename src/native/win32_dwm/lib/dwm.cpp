@@ -40,3 +40,27 @@ int swca(HWND hwnd, int accentState, int color) {
 
 	return 1;
 }
+
+int set_system_backdrop_type(HWND hwnd, int backdropType) {
+	const HINSTANCE hModule = LoadLibrary(TEXT("dwmapi.dll"));
+	if (!hModule)
+		return 1;
+
+	const pDwmSetWindowAttribute DwmSetWindowAttributeFn =
+		(pDwmSetWindowAttribute) GetProcAddress(hModule, "DwmSetWindowAttribute");
+	if (!DwmSetWindowAttributeFn) {
+		FreeLibrary(hModule);
+		return 1;
+	}
+
+	const DWORD backdrop = (DWORD) backdropType;
+	const HRESULT result = DwmSetWindowAttributeFn(
+		hwnd,
+		DWMWA_SYSTEMBACKDROP_TYPE,
+		&backdrop,
+		sizeof(backdrop)
+	);
+	FreeLibrary(hModule);
+
+	return SUCCEEDED(result) ? 0 : 1;
+}
