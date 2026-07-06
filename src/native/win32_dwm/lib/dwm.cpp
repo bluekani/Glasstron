@@ -43,23 +43,28 @@ int swca(HWND hwnd, int accentState, int color) {
 
 int set_system_backdrop_type(HWND hwnd, int backdropType) {
 	const HINSTANCE hModule = LoadLibrary(TEXT("dwmapi.dll"));
-	if (!hModule)
+	if (!hModule) {
+		fprintf(stderr, "[Glasstron/DWM] Failed to load dwmapi.dll\n");
 		return 1;
+	}
 
 	const pDwmSetWindowAttribute DwmSetWindowAttributeFn =
 		(pDwmSetWindowAttribute) GetProcAddress(hModule, "DwmSetWindowAttribute");
 	if (!DwmSetWindowAttributeFn) {
+		fprintf(stderr, "[Glasstron/DWM] Failed to get DwmSetWindowAttribute address\n");
 		FreeLibrary(hModule);
 		return 1;
 	}
 
 	const DWORD backdrop = (DWORD) backdropType;
+	fprintf(stderr, "[Glasstron/DWM] Calling DwmSetWindowAttribute with backdrop=%d\n", backdrop);
 	const HRESULT result = DwmSetWindowAttributeFn(
 		hwnd,
 		DWMWA_SYSTEMBACKDROP_TYPE,
 		&backdrop,
 		sizeof(backdrop)
 	);
+	fprintf(stderr, "[Glasstron/DWM] DwmSetWindowAttribute result: 0x%x, SUCCEEDED: %d\n", result, SUCCEEDED(result));
 	FreeLibrary(hModule);
 
 	return SUCCEEDED(result) ? 0 : 1;

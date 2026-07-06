@@ -17,42 +17,42 @@
 
 #include "dwm.cpp"
 
-Napi::Number set_window_composition_attribute(const Napi::CallbackInfo &info){
-	Napi::Env env{info.Env()};
-
-	return Napi::Number::New(
-		env,
-		swca(
-			(HWND) info[0].As<Napi::Number>().Int64Value(),
-			info[1].As<Napi::Number>().Int32Value(),
-			info[2].As<Napi::Number>().Int32Value()
-		)
-	);
+Napi::Number napi_set_window_composition_attribute(const Napi::CallbackInfo &info){
+    Napi::Env env = info.Env();
+    
+    return Napi::Number::New(
+        env,
+        swca(
+            (HWND) info[0].As<Napi::Number>().Int64Value(),
+            info[1].As<Napi::Number>().Int32Value(),
+            info[2].As<Napi::Number>().Int32Value()
+        )
+    );
 }
 
-Napi::Number set_system_backdrop_type(const Napi::CallbackInfo &info){
-	Napi::Env env{info.Env()};
-
-	return Napi::Number::New(
-		env,
-		set_system_backdrop_type(
-			(HWND) info[0].As<Napi::Number>().Int64Value(),
-			info[1].As<Napi::Number>().Int32Value()
-		)
-	);
+Napi::Number napi_set_system_backdrop_type(const Napi::CallbackInfo &info){
+    Napi::Env env = info.Env();
+    
+    return Napi::Number::New(
+        env,
+        set_system_backdrop_type(
+            (HWND) info[0].As<Napi::Number>().Int64Value(),
+            info[1].As<Napi::Number>().Int32Value()
+        )
+    );
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports){
-	exports.Set(
-		Napi::String::New(env, "setWindowCompositionAttribute"),
-		Napi::Function::New(env, set_window_composition_attribute)
-	);
-	exports.Set(
-		Napi::String::New(env, "setSystemBackdropType"),
-		Napi::Function::New(env, set_system_backdrop_type)
-	);
-
-	return exports;
+    exports.Set(
+        "setWindowCompositionAttribute",
+        Napi::Function::New(env, napi_set_window_composition_attribute)
+    );
+    exports.Set(
+        "setSystemBackdropType",
+        Napi::Function::New(env, napi_set_system_backdrop_type)
+    );
+    
+    return exports;
 }
 
 NODE_API_MODULE(addon, Init)

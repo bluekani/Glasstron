@@ -48,7 +48,10 @@ module.exports = class DWM{
 
 	setSystemBackdropType(backdropType){
 		this.wattr = [backdropType === SYSTEM_BACKDROP_TYPES.none ? 0 : backdropType, 0];
-		return this.__dwm.setSystemBackdropType(this.hwnd, backdropType);
+		console.debug("[Glasstron/DWM] setSystemBackdropType called:", backdropType, "hwnd:", this.hwnd);
+		const result = this.__dwm.setSystemBackdropType(this.hwnd, backdropType);
+		console.debug("[Glasstron/DWM] setSystemBackdropType result:", result);
+		return result;
 	}
 	
 	getWindowCompositionAttribute(){
@@ -100,6 +103,7 @@ module.exports = class DWM{
 	static isWindows11_22H2OrAbove(){
 		if(process.platform !== "win32") return false;
 		const version = os.release().split(".").map(x => parseInt(x));
+		console.debug("[Glasstron/DWM] Windows version:", version, "supports Win11 22H2:", version[0] >= 10 && version[1] >= 0 && version[2] >= 22621);
 		return version[0] >= 10 && version[1] >= 0 && version[2] >= 22621;
 	}
 };
