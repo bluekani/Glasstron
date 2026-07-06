@@ -25,6 +25,11 @@ jobs:
           architecture: "x64"
           cache: yarn
 
+      - name: Setup MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Enable Corepack
         run: corepack enable
 
@@ -34,9 +39,15 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Build dwm_exec.exe
+        shell: cmd
+        run: cl /nologo /O2 /EHsc /Fe:native\dwm_exec.exe src\native\win32_dwm\lib\exec.cpp /link user32.lib dwmapi.lib
+
       - name: Upload native addon artifact
         uses: actions/upload-artifact@v4
         with:
           name: glasstron-native-win32-x64-node24
-          path: native/dwm.node
+          path: |
+            native/dwm.node
+            native/dwm_exec.exe
           if-no-files-found: error

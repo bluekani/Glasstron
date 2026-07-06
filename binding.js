@@ -19,21 +19,45 @@ const execFile = require("util").promisify(require("child_process").execFile);
 const fs = require("fs").promises;
 const _path = require("path");
 
+async function exists(path){
+	try{
+		await fs.stat(path);
+		return true;
+	}catch(err){
+		if(err && err.code === "ENOENT")
+			return false;
+		throw err;
+	}
+}
+
 async function bindings(){
-	if(await fs.stat(_path.resolve(__dirname, "build", "Release", "dwm.node"))){
-		console.log("Glasstron's native DWM addon was built. Cleaning up...");
-	}else{
+	const buildNodePath = _path.resolve(__dirname, "build", "Release", "dwm.node");
+	const nativeNodePath = _path.resolve(__dirname, "native", "dwm.node");
+	const npmCliPath = _path.resolve(_path.dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js");
+
+	if(!(await exists(buildNodePath))){
+		if(await exists(nativeNodePath)){
+			console.log("Glasstron's native DWM addon is already available.");
+			return;
+		}
+
 		try{
-			await execFile("npx", ["node-gyp", "rebuild"], {cwd: __dirname});
+			await execFile(process.execPath, [npmCliPath, "exec", "--yes", "--", "node-gyp", "rebuild"], {cwd: __dirname});
 		}catch(err){
 			console.log("Error while compiling the native addon.");
 			throw err;
 		}
-			console.log("Node-gyp finished. Cleaning up...");
+		console.log("Node-gyp finished. Cleaning up...");
+	}else{
+		console.log("Glasstron's native DWM addon was built. Cleaning up...");
 	}
 
-	await fs.rename(_path.resolve(__dirname, "build", "Release", "dwm.node"), _path.resolve(__dirname, "native", "dwm.node"));
-	await removeRecursive(_path.resolve(__dirname, "build"));
+	if(await exists(nativeNodePath))
+		await fs.unlink(nativeNodePath);
+
+	await fs.rename(buildNodePath, nativeNodePath);
+	if(await exists(_path.resolve(__dirname, "build")))
+		await removeRecursive(_path.resolve(__dirname, "build"));
 	console.log("Done!");
 }
 
