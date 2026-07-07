@@ -78,18 +78,31 @@ module.exports = class DWM{
 	}
 
 	setAcrylic(tint = 0x00404040){
-		if(this.supportsSystemBackdrop())
+		console.debug("[Glasstron/DWM] setAcrylic called, tint:", tint);
+		console.debug("[Glasstron/DWM] supportsSystemBackdrop:", this.supportsSystemBackdrop());
+		if(this.supportsSystemBackdrop()) {
+			console.debug("[Glasstron/DWM] Using setSystemBackdropType with transientwindow (3)");
 			return this.setSystemBackdropType(SYSTEM_BACKDROP_TYPES.transientwindow);
-		if(!this.supportsAcrylic()) return this.setBlurBehind(tint);
+		}
+		console.debug("[Glasstron/DWM] supportsAcrylic:", this.supportsAcrylic());
+		if(!this.supportsAcrylic()) {
+			console.debug("[Glasstron/DWM] Falling back to setBlurBehind");
+			return this.setBlurBehind(tint);
+		}
+		console.debug("[Glasstron/DWM] Using setWindowCompositionAttribute with mode 4");
 		return this.setWindowCompositionAttribute(4, tint);
 	}
 
 	supportsSystemBackdrop(){
-		return this.constructor.isWindows11_22H2OrAbove();
+		const result = this.constructor.isWindows11_22H2OrAbove();
+		console.debug("[Glasstron/DWM] isWindows11_22H2OrAbove:", result);
+		return result;
 	}
 
 	supportsAcrylic(){
-		return this.constructor.isWindows10April18OrAbove();
+		const result = this.constructor.isWindows10April18OrAbove();
+		console.debug("[Glasstron/DWM] isWindows10April18OrAbove:", result);
+		return result;
 	}
 
 	// I won't integrate the bottom static method into the top non-static one;

@@ -32,6 +32,7 @@ module.exports = class Win32 extends Platform {
 	}
 
 	static setBlur(win, bool){
+		console.debug("[Glasstron/Win32] setBlur called, bool:", bool, "blurType:", win.blurType);
 		return Promise.resolve(this._apply(win, bool ? win.blurType : null));
 	}
 
@@ -46,16 +47,20 @@ module.exports = class Win32 extends Platform {
 	}
 
 	static _apply(win, type){
+		console.debug("[Glasstron/Win32] _apply called, type:", type);
 		switch(type){
 			case "acrylic":
+				console.debug("[Glasstron/Win32] Calling setAcrylic");
 				return win.getDWM().setAcrylic();
 			case "blurbehind":
+				console.debug("[Glasstron/Win32] Calling setBlurBehind");
 				return win.getDWM().setBlurBehind();
 			case "transparent":
 				return win.getDWM().setTransparentGradient();
 			case "none":
 			case null:
 			case "":
+				console.debug("[Glasstron/Win32] Calling disable");
 				return win.getDWM().disable();
 			default:
 				throw "Blur type is not recognized: please specify one of 'acrylic', 'blurbehind', 'transparent', 'none'.";
